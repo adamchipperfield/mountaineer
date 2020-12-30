@@ -23,25 +23,32 @@ export function mount(components = {}, container = document) {
        * Find any references and attach them.
        * - Builds array if multiple refs found.
        */
-      node.querySelectorAll('[data-ref]').forEach((ref) => {
-        let exists = refs[ref.dataset.ref]
-        const isArray = Array.isArray(exists)
-
-        if (!!exists) {
-          if (isArray) {
-            refs[ref.dataset.ref]
-              .push(ref)
-
-          } else {
-            refs[ref.dataset.ref] =
-              [exists, ref]
-          }
-
-        } else {
-          refs[ref.dataset.ref] = ref
+      node.querySelectorAll('*').forEach((ref) => {
+        if (ref.dataset.component) {
+          complete = true
+          return
         }
 
-        ref.removeAttribute('data-ref')
+        if (ref.dataset.ref) {
+          let exists = refs[ref.dataset.ref]
+          const isArray = Array.isArray(exists)
+
+          if (!!exists) {
+            if (isArray) {
+              refs[ref.dataset.ref]
+                .push(ref)
+
+            } else {
+              refs[ref.dataset.ref] =
+                [exists, ref]
+            }
+
+          } else {
+            refs[ref.dataset.ref] = ref
+          }
+
+          ref.removeAttribute('data-ref')
+        }
       })
 
       components[key]({ node, refs }).init()
