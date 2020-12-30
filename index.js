@@ -6,14 +6,15 @@ import { kebab } from './utils'
  * - Each element must have a `data-component` attribute.
  * - Value must be handelized version of component name.
  * @param {object} components - The components to mount.
+ * @param {element} container - Optional container, defaults to document.
  * 
  */
-export function mount(components = {}) {
+export function mount(components = {}, container = document) {
   Object.keys(components).forEach((key) => {
     const handle = kebab(key)
     const selector = `[data-component="${handle}"]`
 
-    document.querySelectorAll(selector).forEach((node) => {
+    container.querySelectorAll(selector).forEach((node) => {
       const refs = {}
 
       node.removeAttribute('data-component')
