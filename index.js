@@ -15,6 +15,7 @@ export function mount(components = {}, container = document) {
     const selector = `[data-component="${handle}"]`
 
     container.querySelectorAll(selector).forEach((node) => {
+      let complete = false
       const refs = {}
 
       node.removeAttribute('data-component')
@@ -24,7 +25,7 @@ export function mount(components = {}, container = document) {
        * - Builds array if multiple refs found.
        */
       node.querySelectorAll('*').forEach((ref) => {
-        if (ref.dataset.component) {
+        if (ref.dataset.component || complete) {
           complete = true
           return
         }
