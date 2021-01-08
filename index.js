@@ -15,44 +15,54 @@ export function mount(components = {}, container = document) {
     const selector = `[data-component="${handle}"]`
 
     container.querySelectorAll(selector).forEach((node) => {
-      let complete = false
-      const refs = {}
-
+      components[key]({ node, refs: getRefs(node) }).init()
       node.removeAttribute('data-component')
-
-      /**
-       * Find any references and attach them.
-       * - Builds array if multiple refs found.
-       */
-      node.querySelectorAll('*').forEach((ref) => {
-        if (ref.dataset.component || complete) {
-          complete = true
-          return
-        }
-
-        if (ref.dataset.ref) {
-          let exists = refs[ref.dataset.ref]
-          const isArray = Array.isArray(exists)
-
-          if (!!exists) {
-            if (isArray) {
-              refs[ref.dataset.ref]
-                .push(ref)
-
-            } else {
-              refs[ref.dataset.ref] =
-                [exists, ref]
-            }
-
-          } else {
-            refs[ref.dataset.ref] = ref
-          }
-
-          ref.removeAttribute('data-ref')
-        }
-      })
-
-      components[key]({ node, refs }).init()
     })
   })
+}
+
+/**
+ * Returns the references found in a container.
+ * @param {element} container - The container element.
+ * @returns {object}
+ */
+export function getRefs(container) {
+  const refs = {}
+
+  /**
+   * Find any references and attach them.
+   * - Builds array if multiple refs found.
+   */
+  container.querySelectorAll('*').forEach((ref) => {
+    const parentNamespace = ref.closest('[data-component]')
+      .dataset.component
+    const containerNamespace = container.dataset.component
+
+    if (parentNamespace !== containerNamespace) {
+      return
+    }
+
+    if (ref.dataset.ref) {
+      let exists = refs[ref.dataset.ref]
+      const isArray = Array.isArray(exists)
+
+      if (!!exists) {
+        if (isArray) {
+          refs[ref.dataset.ref]
+            .push(ref)
+
+        } else {
+          refs[ref.dataset.ref] =
+            [exists, ref]
+        }
+
+      } else {
+        refs[ref.dataset.ref] = ref
+      }
+
+      ref.removeAttribute('data-ref')
+    }
+  })
+
+  return refs
 }
