@@ -34,12 +34,15 @@ export function getRefs(container) {
    * - Builds array if multiple refs found.
    */
   container.querySelectorAll('*').forEach((ref) => {
-    const parentNamespace = ref.closest('[data-component]')
-      .dataset.component
-    const containerNamespace = container.dataset.component
+    const parent = ref.closest('[data-component]')
 
-    if (parentNamespace !== containerNamespace) {
-      return
+    if (parent) {
+      const parentNamespace = parent.dataset.component
+      const containerNamespace = container.dataset.component
+
+      if (parentNamespace !== containerNamespace) {
+        return
+      }
     }
 
     if (ref.dataset.ref) {
